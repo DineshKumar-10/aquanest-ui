@@ -1,0 +1,79 @@
+<div class="login-page">
+
+  <a class="brand" routerLink="/">
+    <span class="brand-mark">A</span>
+    <span>
+      <strong>AquaNest</strong>
+      <small>ADMINISTRATION</small>
+    </span>
+  </a>
+
+  <section class="login-card">
+    <div class="login-icon">
+      <span>✦</span>
+    </div>
+
+    <p class="eyebrow">SECURE WORKSPACE</p>
+
+    <h1>Welcome back.</h1>
+
+    <p class="intro">
+      Sign in to manage your fish catalogue and inventory.
+    </p>
+
+    <form (ngSubmit)="submit()" #loginForm="ngForm">
+
+      <label for="username">Admin username</label>
+
+      <input
+        id="username"
+        name="username"
+        type="text"
+        [(ngModel)]="username"
+        autocomplete="username"
+        maxlength="100"
+        required
+        placeholder="Enter administrator username"
+      >
+
+      <label for="password">Password</label>
+
+      <input
+        id="password"
+        name="password"
+        type="password"
+        [(ngModel)]="password"
+        autocomplete="current-password"
+        maxlength="200"
+        required
+        placeholder="Enter your password"
+      >
+
+      @if (errorMessage) {
+        <div class="error-message" role="alert">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button
+        class="login-button"
+        type="submit"
+        [disabled]="loading || loginForm.invalid"
+      >
+        @if (loading) {
+          Signing in...
+        } @else {
+          Sign in securely <span aria-hidden="true">→</span>
+        }
+      </button>
+    </form>
+
+    <a class="back-link" routerLink="/">
+      ← Back to the store
+    </a>
+  </section>
+
+  <p class="login-footer">
+    AquaNest · Authorized administrators only
+  </p>
+</div>

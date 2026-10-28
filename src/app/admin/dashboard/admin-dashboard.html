@@ -1,0 +1,448 @@
+<div class="admin-shell">
+
+  <aside class="admin-sidebar">
+
+    <a class="brand" href="/">
+      <span class="brand-mark">A</span>
+      <span class="brand-copy">
+        <strong>AquaNest</strong>
+        <small>ADMIN STUDIO</small>
+      </span>
+    </a>
+
+    <div class="sidebar-label">WORKSPACE</div>
+
+    <a class="sidebar-link active" href="/admin">
+      <span>▦</span> Dashboard
+    </a>
+
+    <a class="sidebar-link" href="/#shop">
+      <span>◈</span> View storefront
+    </a>
+
+    <div class="sidebar-label">MANAGEMENT</div>
+
+    <a
+      class="sidebar-link"
+      href="/admin"
+      fragment="product-form"
+    >
+      <span>＋</span> Products
+    </a>
+
+    <a
+      class="sidebar-link"
+      href="/admin"
+      fragment="inventory"
+    >
+      <span>▤</span> Inventory
+    </a>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-note">
+        <span class="note-symbol">✦</span>
+        <strong>Inventory matters</strong>
+        <p>Keep product availability up to date for your customers.</p>
+      </div>
+
+      <button
+        type="button"
+        class="sidebar-logout"
+        (click)="logout()"
+      >
+        ↪ Sign out
+      </button>
+    </div>
+
+  </aside>
+
+  <main class="admin-main">
+
+    <header class="admin-topbar">
+      <div>
+        <span class="breadcrumb">Workspace /</span>
+        <strong> Dashboard</strong>
+      </div>
+
+      <div class="admin-profile">
+        <div class="profile-avatar">A</div>
+        <div>
+          <strong>{{ adminUsername }}</strong>
+          <small>Administrator</small>
+        </div>
+      </div>
+    </header>
+
+    <div class="admin-content">
+
+      <section class="welcome-heading">
+        <div>
+          <p class="eyebrow">AQUANEST MANAGEMENT</p>
+          <h1>Your store, <span>at a glance.</span></h1>
+          <p>
+            Manage your fish catalogue, pricing and inventory.
+          </p>
+        </div>
+
+        <a class="view-store" href="/" target="_blank" rel="noopener">
+          View storefront ↗
+        </a>
+      </section>
+
+      @if (errorMessage()) {
+        <div class="notice error-notice" role="alert">
+          {{ errorMessage() }}
+          <button
+            type="button"
+            aria-label="Dismiss error"
+            (click)="errorMessage.set('')"
+          >×</button>
+        </div>
+      }
+
+      @if (successMessage()) {
+        <div class="notice success-notice" role="status">
+          {{ successMessage() }}
+          <button
+            type="button"
+            aria-label="Dismiss message"
+            (click)="successMessage.set('')"
+          >×</button>
+        </div>
+      }
+
+      <section class="stats-grid">
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span>Total products</span>
+            <span class="stat-icon">◈</span>
+          </div>
+          <strong>{{ stats()?.totalProducts ?? '—' }}</strong>
+          <small>All catalogue records</small>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span>Active listings</span>
+            <span class="stat-icon green">✓</span>
+          </div>
+          <strong>{{ stats()?.activeProducts ?? '—' }}</strong>
+          <small>Available catalogue entries</small>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span>Categories</span>
+            <span class="stat-icon blue">▦</span>
+          </div>
+          <strong>{{ stats()?.activeCategories ?? '—' }}</strong>
+          <small>Active fish categories</small>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span>Stock units</span>
+            <span class="stat-icon amber">≋</span>
+          </div>
+          <strong>{{ stats()?.unitsInStock ?? '—' }}</strong>
+          <small>Units across active listings</small>
+        </article>
+
+      </section>
+
+      <section class="editor-card" id="product-form">
+
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">CATALOGUE MANAGEMENT</p>
+            <h2>
+              {{ form.id === null ? 'Add a fish product' : 'Edit fish product' }}
+            </h2>
+            <p>Enter accurate details for your product listing.</p>
+          </div>
+
+          @if (form.id !== null) {
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="cancelEdit()"
+            >
+              Cancel editing
+            </button>
+          }
+        </div>
+
+        <form
+          #productForm="ngForm"
+          (ngSubmit)="saveProduct()"
+          class="product-form"
+        >
+
+          <div class="form-grid">
+
+            <div class="field">
+              <label for="productName">Product name *</label>
+              <input
+                id="productName"
+                name="productName"
+                type="text"
+                [(ngModel)]="form.name"
+                required
+                maxlength="120"
+                placeholder="e.g. Blue Mosaic Guppy"
+              >
+            </div>
+
+            <div class="field">
+              <label for="categoryId">Category *</label>
+              <select
+                id="categoryId"
+                name="categoryId"
+                [(ngModel)]="form.categoryId"
+                required
+              >
+                <option [ngValue]="null" disabled>
+                  Select category
+                </option>
+
+                @for (category of categories(); track category.id) {
+                  <option [ngValue]="category.id">
+                    {{ category.name }}
+                  </option>
+                }
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="price">Price (₹) *</label>
+              <input
+                id="price"
+                name="price"
+                type="number"
+                [(ngModel)]="form.price"
+                required
+                min="0.01"
+                step="0.01"
+                placeholder="120.00"
+              >
+            </div>
+
+            <div class="field">
+              <label for="stock">Stock quantity *</label>
+              <input
+                id="stock"
+                name="stock"
+                type="number"
+                [(ngModel)]="form.stock"
+                required
+                min="0"
+                max="100000"
+                step="1"
+                placeholder="12"
+              >
+            </div>
+
+            <div class="field full-width">
+              <label for="imageUrl">Product image URL</label>
+              <input
+                id="imageUrl"
+                name="imageUrl"
+                type="url"
+                [(ngModel)]="form.imageUrl"
+                maxlength="1000"
+                placeholder="https://example.com/fish.jpg"
+              >
+              <small>Use a trusted, HTTPS image URL.</small>
+            </div>
+
+            <div class="field full-width">
+              <label for="description">Description *</label>
+              <textarea
+                id="description"
+                name="description"
+                [(ngModel)]="form.description"
+                required
+                maxlength="2000"
+                rows="4"
+                placeholder="Describe the fish, care requirements and important details."
+              ></textarea>
+            </div>
+
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="secondary-button"
+              (click)="cancelEdit()"
+            >
+              Reset
+            </button>
+
+            <button
+              type="submit"
+              class="save-button"
+              [disabled]="saving() || productForm.invalid"
+            >
+              @if (saving()) {
+                Saving...
+              } @else if (form.id === null) {
+                Create product →
+              } @else {
+                Save changes →
+              }
+            </button>
+          </div>
+
+        </form>
+
+      </section>
+
+      <section class="products-card" id="inventory">
+
+        <div class="card-heading inventory-heading">
+          <div>
+            <p class="eyebrow">YOUR INVENTORY</p>
+            <h2>Product listings</h2>
+            <p>Edit product information, update stock or deactivate a listing.</p>
+          </div>
+
+          <button
+            type="button"
+            class="refresh-button"
+            (click)="loadProducts(); loadStats()"
+          >
+            ↻ Refresh
+          </button>
+        </div>
+
+        @if (loading()) {
+          <div class="table-state">
+            Loading inventory...
+          </div>
+        } @else if (products().length === 0) {
+          <div class="table-state">
+            No products found. Add your first product above.
+          </div>
+        } @else {
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>PRODUCT</th>
+                  <th>CATEGORY</th>
+                  <th>PRICE</th>
+                  <th>STOCK</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (product of products(); track product.id) {
+                  <tr>
+                    <td>
+                      <div class="table-product">
+                        @if (product.imageUrl) {
+                          <img
+                            [src]="product.imageUrl"
+                            [alt]="product.name"
+                            loading="lazy"
+                          >
+                        } @else {
+                          <span class="table-image-fallback">A</span>
+                        }
+
+                        <div>
+                          <strong>{{ product.name }}</strong>
+                          <small>#{{ product.id }}</small>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>{{ product.category }}</td>
+
+                    <td>
+                      {{ product.price | currency:'INR':'symbol':'1.0-2' }}
+                    </td>
+
+                    <td>
+                      <div class="stock-editor">
+                        <input
+                          type="number"
+                          [name]="'stock-' + product.id"
+                          [(ngModel)]="product.stock"
+                          min="0"
+                          max="100000"
+                          step="1"
+                          [disabled]="!product.active"
+                          [attr.aria-label]="'Stock for ' + product.name"
+                        >
+
+                        <button
+                          type="button"
+                          class="stock-save"
+                          [disabled]="!product.active"
+                          (click)="updateStock(product)"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </td>
+
+                    <td>
+                      <span
+                        class="status-badge"
+                        [class.status-inactive]="!product.active"
+                      >
+                        {{ product.active ? 'Active' : 'Inactive' }}
+                      </span>
+                    </td>
+
+                    <td>
+                      <div class="row-actions">
+                        <button
+                          type="button"
+                          class="edit-button"
+                          (click)="editProduct(product)"
+                        >
+                          Edit
+                        </button>
+
+                        @if (product.active) {
+                          <button
+                            type="button"
+                            class="deactivate-button"
+                            (click)="deactivateProduct(product)"
+                          >
+                            Deactivate
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+
+            </table>
+          </div>
+
+          @if (products().length === 100) {
+            <p class="table-footnote">
+              Showing the first 100 products. Pagination can be added
+              when the catalogue grows.
+            </p>
+          }
+        }
+
+      </section>
+
+      <footer class="admin-footer">
+        AquaNest Administration · Demo environment
+      </footer>
+
+    </div>
+  </main>
+
+</div>
