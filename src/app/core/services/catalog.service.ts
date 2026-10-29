@@ -24,9 +24,9 @@ export class CatalogService {
 
   private readonly http = inject(HttpClient);
 
-  // private readonly apiUrl = 'http://localhost:8080/api';
+  // private readonly apiUrl = 'https://aquanest-api-hbeu.onrender.com';
 
-  private readonly apiUrl = '/api';
+  private readonly apiUrl = 'https://aquanest-api-hbeu.onrender.com';
 
   
   getCategories(): Observable<Category[]> {
