@@ -1,0 +1,9 @@
+
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://aquanest-api-hbeu.onrender.com/api/$1"
+    }
+  ]
+}
