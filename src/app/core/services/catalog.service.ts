@@ -26,7 +26,10 @@ export class CatalogService {
 
   // private readonly apiUrl = 'https://aquanest-api-hbeu.onrender.com';
 
-  private readonly apiUrl = 'https://aquanest-api-hbeu.onrender.com';
+  // private readonly apiUrl = 'https://aquanest-api-hbeu.onrender.com';
+
+
+    private readonly apiUrl = '/api';
 
   
   getCategories(): Observable<Category[]> {
