@@ -19,6 +19,11 @@ import { FormsModule } from '@angular/forms';
 import { CatalogService } from '../../core/services/catalog.service';
 import { Product } from '../../core/models/product.model';
 import { Category } from '../../core/models/category.model';
+import { Router } from '@angular/router';
+import { CartService } from '../../core/services/cart.service';
+// private readonly router = inject(Router);
+
+// readonly cartService = inject(CartService);
 
 @Component({
   selector: 'app-home',
@@ -35,6 +40,13 @@ export class Home implements OnInit {
   readonly products = signal<Product[]>([]);
   readonly categories = signal<Category[]>([]);
 
+  private readonly router = inject(Router);
+
+readonly cartService = inject(CartService);
+
+
+readonly cartMessage = signal('');
+
   readonly loading = signal(true);
   readonly error = signal('');
   readonly page = signal(0);
@@ -48,6 +60,9 @@ export class Home implements OnInit {
 
   readonly fallbackImage =
     'https://placehold.co/800x600/eaf4f0/284b43?text=AquaNest+Fish';
+
+
+
 
   ngOnInit(): void {
     this.loadCategories();
@@ -64,6 +79,25 @@ export class Home implements OnInit {
       }
     });
   }
+
+  openCart(): void {
+  void this.router.navigate(['/cart']);
+}
+
+
+addToCart(product: Product): void {
+  const added = this.cartService.addProduct(product);
+
+  if (added) {
+    this.cartMessage.set(`${product.name} added to your cart!`);
+  } else if (!product.inStock) {
+    this.cartMessage.set(`${product.name} is currently out of stock.`);
+  } else {
+    this.cartMessage.set(
+      `Maximum quantity reached for ${product.name}.`
+    );
+  }
+}
 
   loadProducts(): void {
     this.loading.set(true);

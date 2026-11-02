@@ -1,0 +1,92 @@
+<div class="confirmation-page">
+
+  <header class="confirmation-header">
+    <a routerLink="/" class="brand">
+      <span class="brand-mark">A</span>
+      <span>
+        <strong>AquaNest</strong>
+        <small>THE AQUATIC LIFE</small>
+      </span>
+    </a>
+  </header>
+
+  <main class="confirmation-main">
+
+    @if (validConfirmation) {
+
+      <section class="confirmation-card">
+
+        <div class="success-icon">
+          ✓
+        </div>
+
+        <p class="eyebrow">ORDER REQUEST RECEIVED</p>
+
+        <h1>Thank you for choosing <span>AquaNest.</span></h1>
+
+        <p class="confirmation-description">
+          Your order request has been recorded successfully.
+          The seller will review the fish availability and delivery details.
+        </p>
+
+        <div class="confirmation-details">
+
+          <div>
+            <span>Order reference</span>
+            <strong>{{ orderNumber }}</strong>
+          </div>
+
+          <div>
+            <span>Order total</span>
+            <strong>
+              {{ totalAmount | currency:'INR':'symbol':'1.0-2' }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Order status</span>
+            <strong class="pending-status">
+              Pending confirmation
+            </strong>
+          </div>
+
+        </div>
+
+        <div class="pending-notice">
+          <strong>What happens next?</strong>
+          <p>
+            The seller must confirm the stock, delivery eligibility
+            and final shipping charges. This demo does not collect
+            payments or guarantee delivery.
+          </p>
+        </div>
+
+        <a routerLink="/" class="home-button">
+          Continue exploring fish →
+        </a>
+
+      </section>
+
+    } @else {
+
+      <section class="confirmation-card">
+        <h1>Confirmation details unavailable.</h1>
+
+        <p>
+          This page needs a valid order confirmation from the checkout.
+        </p>
+
+        <a routerLink="/" class="home-button">
+          Return to AquaNest
+        </a>
+      </section>
+
+    }
+
+  </main>
+
+  <footer class="confirmation-footer">
+    AquaNest · Demo storefront
+  </footer>
+
+</div>

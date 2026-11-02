@@ -1,0 +1,215 @@
+<div class="orders-page">
+
+  <header class="orders-header">
+    <div>
+      <p class="eyebrow">AQUANEST ADMINISTRATION</p>
+      <h1>Customer <span>orders.</span></h1>
+      <p>Review orders and manage their confirmation and fulfilment status.</p>
+    </div>
+
+    <div class="header-actions">
+      <a href="/admin">← Dashboard</a>
+      <button
+        type="button"
+        (click)="loadOrders()"
+        [disabled]="loading()"
+      >
+        ↻ Refresh
+      </button>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="notice error-notice" role="alert">
+      {{ errorMessage() }}
+      <button
+        type="button"
+        (click)="errorMessage.set('')"
+        aria-label="Dismiss error"
+      >×</button>
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="notice success-notice" role="status">
+      {{ successMessage() }}
+      <button
+        type="button"
+        (click)="successMessage.set('')"
+        aria-label="Dismiss message"
+      >×</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="empty-state">
+      Loading customer orders...
+    </div>
+  } @else if (orders().length === 0) {
+    <div class="empty-state">
+      <span>▤</span>
+      <h2>No customer orders yet.</h2>
+      <p>New checkout requests will appear here.</p>
+    </div>
+  } @else {
+
+    <div class="order-count">
+      {{ orders().length }} order(s) displayed
+    </div>
+
+    <div class="order-list">
+
+      @for (order of orders(); track order.id) {
+
+        <article class="order-card">
+
+          <div class="order-heading">
+
+            <div>
+              <span class="order-reference">
+                {{ order.orderNumber }}
+              </span>
+
+              <h2>{{ order.customerName }}</h2>
+
+              <p>{{ order.email }} · {{ order.phone }}</p>
+            </div>
+
+            <span
+              class="status-badge"
+              [class.pending]="order.status === 'PENDING_CONFIRMATION'"
+              [class.confirmed]="order.status === 'CONFIRMED'"
+              [class.rejected]="order.status === 'REJECTED'"
+              [class.completed]="order.status === 'COMPLETED'"
+              [class.cancelled]="order.status === 'CANCELLED'"
+            >
+              {{ statusLabel(order.status) }}
+            </span>
+
+          </div>
+
+          <div class="order-meta">
+
+            <div>
+              <span>Order date</span>
+              <strong>
+                {{ order.createdAt | date:'medium' }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Order total</span>
+              <strong>
+                {{ order.totalAmount | currency:'INR':'symbol':'1.0-2' }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Fish items</span>
+              <strong>{{ order.items.length }}</strong>
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            class="details-toggle"
+            (click)="toggleDetails(order.id)"
+          >
+            {{ isExpanded(order.id) ? 'Hide details −' : 'View order details +' }}
+          </button>
+
+          @if (isExpanded(order.id)) {
+
+            <div class="order-details">
+
+              <h3>Delivery information</h3>
+
+              <p>
+                {{ order.addressLine }},
+                {{ order.city }},
+                {{ order.state }} -
+                {{ order.postalCode }}
+              </p>
+
+              <h3>Ordered products</h3>
+
+              @for (item of order.items; track item.productId) {
+                <div class="order-line">
+                  <div>
+                    <strong>{{ item.productName }}</strong>
+                    <small>
+                      {{ item.quantity }} ×
+                      {{ item.unitPrice | currency:'INR':'symbol':'1.0-2' }}
+                    </small>
+                  </div>
+
+                  <strong>
+                    {{ item.lineTotal | currency:'INR':'symbol':'1.0-2' }}
+                  </strong>
+                </div>
+              }
+
+            </div>
+
+          }
+
+          <div class="order-actions">
+
+            @if (order.status === 'PENDING_CONFIRMATION') {
+
+              <button
+                type="button"
+                class="action-button confirm"
+                [disabled]="updating() === order.id"
+                (click)="updateStatus(order, 'CONFIRMED')"
+              >
+                Confirm order
+              </button>
+
+              <button
+                type="button"
+                class="action-button reject"
+                [disabled]="updating() === order.id"
+                (click)="updateStatus(order, 'REJECTED')"
+              >
+                Reject
+              </button>
+
+            } @else if (order.status === 'CONFIRMED') {
+
+              <button
+                type="button"
+                class="action-button complete"
+                [disabled]="updating() === order.id"
+                (click)="updateStatus(order, 'COMPLETED')"
+              >
+                Mark completed
+              </button>
+
+              <button
+                type="button"
+                class="action-button reject"
+                [disabled]="updating() === order.id"
+                (click)="updateStatus(order, 'CANCELLED')"
+              >
+                Cancel order
+              </button>
+
+            }
+
+            @if (updating() === order.id) {
+              <span class="updating-text">Updating...</span>
+            }
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+
+  }
+
+</div>

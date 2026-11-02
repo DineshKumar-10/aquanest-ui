@@ -1,0 +1,177 @@
+<div class="cart-page">
+
+  <header class="cart-header">
+    <a routerLink="/" class="brand">
+      <span class="brand-mark">A</span>
+      <span>
+        <strong>AquaNest</strong>
+        <small>THE AQUATIC LIFE</small>
+      </span>
+    </a>
+
+    <a routerLink="/" class="continue-link">
+      ← Continue shopping
+    </a>
+  </header>
+
+  <main class="cart-container">
+
+    <div class="page-heading">
+      <p class="eyebrow">YOUR AQUANEST SELECTION</p>
+      <h1>Shopping <span>cart.</span></h1>
+      <p>
+        Review your selected fish before proceeding to checkout.
+      </p>
+    </div>
+
+    @if (cartService.items().length === 0) {
+
+      <section class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+
+        <h2>Your cart is waiting for a little life.</h2>
+
+        <p>
+          Explore our ornamental fish collection and find
+          something special for your aquarium.
+        </p>
+
+        <a routerLink="/" class="primary-button">
+          Explore fish →
+        </a>
+      </section>
+
+    } @else {
+
+      <div class="cart-layout">
+
+        <section class="cart-items">
+
+          <div class="list-heading">
+            <h2>Your selected fish</h2>
+            <span>
+              {{ cartService.itemCount() }} item(s)
+            </span>
+          </div>
+
+          @for (item of cartService.items(); track item.productId) {
+
+            <article class="cart-item">
+
+              <img
+                [src]="item.imageUrl || fallbackImage"
+                [alt]="item.name"
+                (error)="$any($event.target).src = fallbackImage"
+              >
+
+              <div class="item-info">
+                <span class="item-category">
+                  {{ item.category }}
+                </span>
+
+                <h3>{{ item.name }}</h3>
+
+                <strong>
+                  {{ item.price | currency:'INR':'symbol':'1.0-2' }}
+                </strong>
+              </div>
+
+              <div class="quantity-control">
+                <button
+                  type="button"
+                  [disabled]="item.quantity <= 1"
+                  (click)="decrease(item.productId, item.quantity)"
+                  [attr.aria-label]="'Decrease ' + item.name + ' quantity'"
+                >
+                  −
+                </button>
+
+                <span>{{ item.quantity }}</span>
+
+                <button
+                  type="button"
+                  [disabled]="item.quantity >= 20"
+                  (click)="increase(item.productId, item.quantity)"
+                  [attr.aria-label]="'Increase ' + item.name + ' quantity'"
+                >
+                  +
+                </button>
+              </div>
+
+              <div class="item-total">
+                <strong>
+                  {{ item.price * item.quantity | currency:'INR':'symbol':'1.0-2' }}
+                </strong>
+
+                <button
+                  type="button"
+                  class="remove-button"
+                  (click)="remove(item.productId)"
+                >
+                  Remove
+                </button>
+              </div>
+
+            </article>
+          }
+
+          <a routerLink="/" class="back-shopping">
+            ← Add more fish
+          </a>
+
+        </section>
+
+        <aside class="cart-summary">
+
+          <p class="eyebrow">ORDER SUMMARY</p>
+
+          <h2>Almost there.</h2>
+
+          <div class="summary-row">
+            <span>Total items</span>
+            <strong>{{ cartService.itemCount() }}</strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Estimated subtotal</span>
+            <strong>
+              {{ cartService.estimatedTotal() | currency:'INR':'symbol':'1.0-2' }}
+            </strong>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-total">
+            <span>Estimated total</span>
+            <strong>
+              {{ cartService.estimatedTotal() | currency:'INR':'symbol':'1.0-2' }}
+            </strong>
+          </div>
+
+          <p class="summary-note">
+            Final prices and stock are verified by the server during checkout.
+            Delivery charges and eligibility will be confirmed by the seller.
+          </p>
+
+          <a routerLink="/checkout" class="checkout-button">
+            Proceed to checkout →
+          </a>
+
+          <div class="secure-note">
+            <span>♧</span>
+            Your order is a request, not an online payment.
+          </div>
+
+        </aside>
+
+      </div>
+
+    }
+
+  </main>
+
+  <footer class="cart-footer">
+    AquaNest · Demo storefront · © {{ currentYear }}
+  </footer>
+
+</div>

@@ -16,9 +16,31 @@
       <a href="#contact">Contact</a>
     </nav>
 
-    <a class="header-cta" href="#shop">
+    <!-- <a class="header-cta" href="#shop">
       Explore collection <span aria-hidden="true">↗</span>
-    </a>
+    </a> -->
+
+
+    <div class="header-actions">
+
+  <button
+    type="button"
+    class="cart-header-button"
+    (click)="openCart()"
+    aria-label="Open shopping cart"
+  >
+    <span aria-hidden="true">🛒</span>
+    Cart
+    <span class="cart-count">
+      {{ cartService.itemCount() }}
+    </span>
+  </button>
+
+  <a class="header-cta" href="#shop">
+    Explore collection <span aria-hidden="true">↗</span>
+  </a>
+
+</div>
   </header>
 
   <main>
@@ -108,6 +130,18 @@
 
     <section class="shop-section section-container" id="shop">
 
+      @if (cartMessage()) {
+  <div class="cart-toast" role="status">
+    {{ cartMessage() }}
+    <button
+      type="button"
+      (click)="cartMessage.set('')"
+      aria-label="Dismiss notification"
+    >
+      ×
+    </button>
+  </div>
+}
       <div class="section-heading">
         <div>
           <p class="section-eyebrow">THE COLLECTION</p>
@@ -248,7 +282,7 @@
                   {{ product.description }}
                 </p>
 
-                <div class="product-card-bottom">
+                <!-- <div class="product-card-bottom">
                   <div class="price-block">
                     <small>Price</small>
                     <strong>
@@ -263,7 +297,39 @@
                   >
                     View details <span aria-hidden="true">↗</span>
                   </button>
-                </div>
+                </div> -->
+
+                <div class="product-card-bottom">
+
+  <div class="price-block">
+    <small>Price</small>
+    <strong>
+      {{ product.price | currency:'INR':'symbol':'1.0-2' }}
+    </strong>
+  </div>
+
+  <div class="product-actions">
+
+    <button
+      type="button"
+      class="details-button"
+      (click)="openProductDetails(product)"
+    >
+      View details
+    </button>
+
+    <button
+      type="button"
+      class="add-cart-button"
+      [disabled]="!product.inStock"
+      (click)="addToCart(product)"
+    >
+      {{ product.inStock ? '+ Add' : 'Unavailable' }}
+    </button>
+
+  </div>
+
+</div>
               </div>
             </article>
           }
@@ -387,14 +453,23 @@
         aria-labelledby="detail-title"
         (click)="$event.stopPropagation()"
       >
-        <button
+        <!-- <button
           type="button"
           class="modal-close"
           aria-label="Close product details"
           (click)="closeProductDetails()"
         >
           ×
-        </button>
+        </button> -->
+
+
+        <button
+  type="button"
+  class="primary-button modal-done"
+  (click)="closeProductDetails()"
+>
+  Continue browsing
+</button>
 
         <div class="modal-image">
           <img
