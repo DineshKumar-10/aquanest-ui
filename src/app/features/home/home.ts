@@ -90,6 +90,7 @@ addToCart(product: Product): void {
 
   if (added) {
     this.cartMessage.set(`${product.name} added to your cart!`);
+    this.selectedProduct.set(null);
   } else if (!product.inStock) {
     this.cartMessage.set(`${product.name} is currently out of stock.`);
   } else {

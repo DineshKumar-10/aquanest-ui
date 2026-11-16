@@ -318,15 +318,25 @@
       View details
     </button>
 
-    <button
+    <!-- <button
       type="button"
       class="add-cart-button"
       [disabled]="!product.inStock"
       (click)="addToCart(product)"
     >
       {{ product.inStock ? '+ Add' : 'Unavailable' }}
-    </button>
+    </button> -->
 
+
+
+    <button
+  type="button"
+  class="primary-button modal-done"
+  [disabled]="!product.inStock"
+  (click)="addToCart(product)"
+>
+  {{ product.inStock ? 'Add to cart →' : 'Currently unavailable' }}
+</button>
   </div>
 
 </div>
