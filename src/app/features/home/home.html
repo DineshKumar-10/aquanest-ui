@@ -318,25 +318,15 @@
       View details
     </button>
 
-    <!-- <button
+    <button
       type="button"
       class="add-cart-button"
       [disabled]="!product.inStock"
       (click)="addToCart(product)"
     >
       {{ product.inStock ? '+ Add' : 'Unavailable' }}
-    </button> -->
+    </button>
 
-
-
-    <button
-  type="button"
-  class="primary-button modal-done"
-  [disabled]="!product.inStock"
-  (click)="addToCart(product)"
->
-  {{ product.inStock ? 'Add to cart →' : 'Currently unavailable' }}
-</button>
   </div>
 
 </div>
@@ -450,7 +440,7 @@
     </span>
   </footer>
 
-  @if (selectedProduct(); as product) {
+  <!-- @if (selectedProduct(); as product) {
     <div
       class="modal-backdrop"
       (click)="closeProductDetails()"
@@ -462,7 +452,7 @@
         aria-modal="true"
         aria-labelledby="detail-title"
         (click)="$event.stopPropagation()"
-      >
+      > -->
         <!-- <button
           type="button"
           class="modal-close"
@@ -472,7 +462,7 @@
           ×
         </button> -->
 
-
+<!-- 
         <button
   type="button"
   class="primary-button modal-done"
@@ -527,5 +517,108 @@
     </div>
   }
 
-</div>
+</div> -->
 
+
+
+
+
+@if (selectedProduct(); as product) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeProductDetails()"
+    role="presentation"
+  >
+
+    <section
+      class="detail-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="detail-title"
+      (click)="$event.stopPropagation()"
+    >
+
+      <!-- Close button -->
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Close product details"
+        (click)="closeProductDetails()"
+      >
+        ×
+      </button>
+
+      <!-- Product image -->
+      <div class="modal-image">
+
+        <img
+          [src]="product.imageUrl || fallbackImage"
+          [alt]="product.name"
+          (error)="onImageError($event)"
+        >
+
+      </div>
+
+      <!-- Product information -->
+      <div class="modal-content">
+
+        <p class="section-eyebrow">
+          {{ product.category }}
+        </p>
+
+        <h2 id="detail-title">
+          {{ product.name }}
+        </h2>
+
+        <p class="modal-description">
+          {{ product.description }}
+        </p>
+
+        <div class="modal-price">
+          {{ product.price | currency:'INR':'symbol':'1.0-2' }}
+        </div>
+
+        <div
+          class="modal-stock"
+          [class.out-of-stock]="!product.inStock"
+        >
+
+          <span class="stock-dot"></span>
+
+          {{
+            product.inStock
+              ? 'Currently shown as in stock'
+              : 'Currently out of stock'
+          }}
+
+        </div>
+
+        <p class="demo-disclaimer">
+          Demo catalogue: confirm actual price, availability and care
+          requirements with the seller before purchase.
+        </p>
+
+        <!-- Add to cart button -->
+        <button
+          type="button"
+          class="primary-button modal-done"
+          [disabled]="!product.inStock"
+          (click)="addToCart(product)"
+        >
+
+          {{
+            product.inStock
+              ? 'Add to cart →'
+              : 'Currently unavailable'
+          }}
+
+        </button>
+
+      </div>
+
+    </section>
+
+  </div>
+
+}

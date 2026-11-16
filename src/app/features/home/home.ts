@@ -1,12 +1,184 @@
-// import { Component } from '@angular/core';
+// // import { Component } from '@angular/core';
+
+// // @Component({
+// //   imports: [],
+// //   selector: 'app-home',
+// //   styleUrl: './home.scss',
+// //   templateUrl: './home.html',
+// // })
+// // export class Home {}
+
+
+
+
+
+// import { CommonModule } from '@angular/common';
+// import { Component, OnInit, inject, signal } from '@angular/core';
+// import { FormsModule } from '@angular/forms';
+
+// import { CatalogService } from '../../core/services/catalog.service';
+// import { Product } from '../../core/models/product.model';
+// import { Category } from '../../core/models/category.model';
+// import { Router } from '@angular/router';
+// import { CartService } from '../../core/services/cart.service';
+// // private readonly router = inject(Router);
+
+// // readonly cartService = inject(CartService);
 
 // @Component({
-//   imports: [],
 //   selector: 'app-home',
-//   styleUrl: './home.scss',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule],
 //   templateUrl: './home.html',
+//   styleUrl: './home.scss'
 // })
-// export class Home {}
+// export class Home implements OnInit {
+//   private readonly catalogService = inject(CatalogService);
+
+//   readonly currentYear = new Date().getFullYear();
+
+//   readonly products = signal<Product[]>([]);
+//   readonly categories = signal<Category[]>([]);
+
+//   private readonly router = inject(Router);
+
+// readonly cartService = inject(CartService);
+
+
+// readonly cartMessage = signal('');
+
+//   readonly loading = signal(true);
+//   readonly error = signal('');
+//   readonly page = signal(0);
+//   readonly totalPages = signal(0);
+//   readonly totalElements = signal(0);
+//   readonly selectedCategory = signal('');
+//   readonly selectedProduct = signal<Product | null>(null);
+
+//   readonly pageSize = 12;
+//   searchTerm = '';
+
+//   readonly fallbackImage =
+//     'https://placehold.co/800x600/eaf4f0/284b43?text=AquaNest+Fish';
+
+
+
+
+//   ngOnInit(): void {
+//     this.loadCategories();
+//     this.loadProducts();
+//   }
+
+//   loadCategories(): void {
+//     this.catalogService.getCategories().subscribe({
+//       next: (categories) => {
+//         this.categories.set(categories);
+//       },
+//       error: (error: unknown) => {
+//         console.error('Failed to load categories:', error);
+//       }
+//     });
+//   }
+
+//   openCart(): void {
+//   void this.router.navigate(['/cart']);
+// }
+
+
+// addToCart(product: Product): void {
+//   const added = this.cartService.addProduct(product);
+
+//   if (added) {
+//     this.cartMessage.set(`${product.name} added to your cart!`);
+//   } else if (!product.inStock) {
+//     this.cartMessage.set(`${product.name} is currently out of stock.`);
+//   } else {
+//     this.cartMessage.set(
+//       `Maximum quantity reached for ${product.name}.`
+//     );
+//   }
+// }
+
+//   loadProducts(): void {
+//     this.loading.set(true);
+//     this.error.set('');
+
+//     this.catalogService.getProducts({
+//       search: this.searchTerm,
+//       category: this.selectedCategory(),
+//       page: this.page(),
+//       size: this.pageSize
+//     }).subscribe({
+//       next: (response) => {
+//         this.products.set(response.content ?? []);
+
+//         this.totalElements.set(
+//           response.totalElements ??
+//           response.page?.totalElements ??
+//           response.content?.length ??
+//           0
+//         );
+
+//         this.totalPages.set(
+//           response.totalPages ??
+//           response.page?.totalPages ??
+//           0
+//         );
+
+//         this.loading.set(false);
+//       },
+//       error: (error: unknown) => {
+//         console.error('Failed to load products:', error);
+
+//         this.error.set(
+//           'Unable to load fish right now. Please check that the backend is running and try again.'
+//         );
+
+//         this.loading.set(false);
+//       }
+//     });
+//   }
+
+//   submitSearch(): void {
+//     this.page.set(0);
+//     this.loadProducts();
+//   }
+
+//   chooseCategory(categoryName: string): void {
+//     this.selectedCategory.set(categoryName);
+//     this.page.set(0);
+//     this.loadProducts();
+//   }
+
+//   previousPage(): void {
+//     if (this.page() > 0) {
+//       this.page.update(current => current - 1);
+//       this.loadProducts();
+//     }
+//   }
+
+//   nextPage(): void {
+//     if (this.page() + 1 < this.totalPages()) {
+//       this.page.update(current => current + 1);
+//       this.loadProducts();
+//     }
+//   }
+
+//   openProductDetails(product: Product): void {
+//     this.selectedProduct.set(product);
+//   }
+
+//   closeProductDetails(): void {
+//     this.selectedProduct.set(null);
+//   }
+
+//   onImageError(event: Event): void {
+//     const image = event.target as HTMLImageElement;
+//     image.onerror = null;
+//     image.src = this.fallbackImage;
+//   }
+// }
+
 
 
 
@@ -15,15 +187,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { CatalogService } from '../../core/services/catalog.service';
+import { CartService } from '../../core/services/cart.service';
+
 import { Product } from '../../core/models/product.model';
 import { Category } from '../../core/models/category.model';
-import { Router } from '@angular/router';
-import { CartService } from '../../core/services/cart.service';
-// private readonly router = inject(Router);
-
-// readonly cartService = inject(CartService);
 
 @Component({
   selector: 'app-home',
@@ -33,42 +203,48 @@ import { CartService } from '../../core/services/cart.service';
   styleUrl: './home.scss'
 })
 export class Home implements OnInit {
+
   private readonly catalogService = inject(CatalogService);
+  private readonly router = inject(Router);
+
+  readonly cartService = inject(CartService);
 
   readonly currentYear = new Date().getFullYear();
 
+  // Product and category data
   readonly products = signal<Product[]>([]);
   readonly categories = signal<Category[]>([]);
 
-  private readonly router = inject(Router);
+  // Cart notification
+  readonly cartMessage = signal('');
 
-readonly cartService = inject(CartService);
-
-
-readonly cartMessage = signal('');
-
+  // Loading and error states
   readonly loading = signal(true);
   readonly error = signal('');
+
+  // Pagination
   readonly page = signal(0);
   readonly totalPages = signal(0);
   readonly totalElements = signal(0);
-  readonly selectedCategory = signal('');
-  readonly selectedProduct = signal<Product | null>(null);
-
   readonly pageSize = 12;
+
+  // Search and category filters
+  readonly selectedCategory = signal('');
   searchTerm = '';
 
+  // Product details modal
+  readonly selectedProduct = signal<Product | null>(null);
+
+  // Fallback image
   readonly fallbackImage =
     'https://placehold.co/800x600/eaf4f0/284b43?text=AquaNest+Fish';
-
-
-
 
   ngOnInit(): void {
     this.loadCategories();
     this.loadProducts();
   }
 
+  // Load categories
   loadCategories(): void {
     this.catalogService.getCategories().subscribe({
       next: (categories) => {
@@ -80,27 +256,43 @@ readonly cartMessage = signal('');
     });
   }
 
+  // Open shopping cart
   openCart(): void {
-  void this.router.navigate(['/cart']);
-}
-
-
-addToCart(product: Product): void {
-  const added = this.cartService.addProduct(product);
-
-  if (added) {
-    this.cartMessage.set(`${product.name} added to your cart!`);
-    this.selectedProduct.set(null);
-  } else if (!product.inStock) {
-    this.cartMessage.set(`${product.name} is currently out of stock.`);
-  } else {
-    this.cartMessage.set(
-      `Maximum quantity reached for ${product.name}.`
-    );
+    void this.router.navigate(['/cart']);
   }
-}
 
+  // Add product to cart
+  addToCart(product: Product): void {
+
+    const added = this.cartService.addProduct(product);
+
+    if (added) {
+
+      this.cartMessage.set(
+        `${product.name} added to your cart!`
+      );
+
+      // Close product details modal after successful addition
+      this.selectedProduct.set(null);
+
+    } else if (!product.inStock) {
+
+      this.cartMessage.set(
+        `${product.name} is currently out of stock.`
+      );
+
+    } else {
+
+      this.cartMessage.set(
+        `Maximum quantity reached for ${product.name}.`
+      );
+
+    }
+  }
+
+  // Load products
   loadProducts(): void {
+
     this.loading.set(true);
     this.error.set('');
 
@@ -110,7 +302,9 @@ addToCart(product: Product): void {
       page: this.page(),
       size: this.pageSize
     }).subscribe({
+
       next: (response) => {
+
         this.products.set(response.content ?? []);
 
         this.totalElements.set(
@@ -128,7 +322,9 @@ addToCart(product: Product): void {
 
         this.loading.set(false);
       },
+
       error: (error: unknown) => {
+
         console.error('Failed to load products:', error);
 
         this.error.set(
@@ -140,41 +336,58 @@ addToCart(product: Product): void {
     });
   }
 
+  // Search products
   submitSearch(): void {
     this.page.set(0);
     this.loadProducts();
   }
 
+  // Filter products by category
   chooseCategory(categoryName: string): void {
+
     this.selectedCategory.set(categoryName);
     this.page.set(0);
+
     this.loadProducts();
   }
 
+  // Previous page
   previousPage(): void {
+
     if (this.page() > 0) {
+
       this.page.update(current => current - 1);
+
       this.loadProducts();
     }
   }
 
+  // Next page
   nextPage(): void {
+
     if (this.page() + 1 < this.totalPages()) {
+
       this.page.update(current => current + 1);
+
       this.loadProducts();
     }
   }
 
+  // Open product details
   openProductDetails(product: Product): void {
     this.selectedProduct.set(product);
   }
 
+  // Close product details
   closeProductDetails(): void {
     this.selectedProduct.set(null);
   }
 
+  // Handle image loading errors
   onImageError(event: Event): void {
+
     const image = event.target as HTMLImageElement;
+
     image.onerror = null;
     image.src = this.fallbackImage;
   }
