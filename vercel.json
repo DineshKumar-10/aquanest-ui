@@ -1,9 +1,16 @@
 
+
+
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://aquanest-api-hbeu.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://aquanest-api-hbeu.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
